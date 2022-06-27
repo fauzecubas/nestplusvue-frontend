@@ -38,11 +38,11 @@ export default defineComponent({
   setup(props, { emit }) {
     const state = {};
 
-    function addUser() {
+    function addUser(): void {
       emit('addUser');
     }
 
-    function deleteAll() {
+    function deleteAll(): void {
       emit('deleteAll');
     }
 

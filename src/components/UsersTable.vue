@@ -279,7 +279,7 @@ export default defineComponent({
       return users;
     }
 
-    function handleEdit(user: User) {
+    function handleEdit(user: User): void {
       console.log(user);
     }
 
