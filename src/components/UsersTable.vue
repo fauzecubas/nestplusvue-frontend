@@ -32,7 +32,9 @@
         </q-td>
         <q-td key="name" :props="props">{{ props.row.name }}</q-td>
         <q-td key="age" :props="props">{{ props.row.age }}</q-td>
-        <q-td key="githubUser" :props="props">{{ props.row.githubUser }}</q-td>
+        <q-td key="githubUser" :props="props">{{
+          props.row.githubUsername
+        }}</q-td>
         <q-td key="address" :props="props"
           >{{ props.row.address }}, {{ props.row.addressNumber }} -
           {{ props.row.city }}/{{ props.row.state }}</q-td
@@ -137,7 +139,7 @@
             v-model="state.newUser.zipCode"
             label="Zip Code"
             class="q-py-xs q-pr-xs col-4"
-            @keyup.enter="handleZipCodeSearch()"
+            @keyup.enter="handleZipCodeSearch(state.newUser.zipCode, 'create')"
             :rules="[
               (val) => !!state.newUser.zipCode || 'This field is required',
             ]"
@@ -146,7 +148,11 @@
             maxlength="12"
           >
             <template v-slot:append>
-              <q-btn icon="search" flat @click="handleZipCodeSearch()" />
+              <q-btn
+                icon="search"
+                flat
+                @click="handleZipCodeSearch(state.newUser.zipCode, 'create')"
+              />
             </template>
           </q-input>
           <q-input
@@ -213,6 +219,88 @@
             hide-bottom-space
             ref="stateRefCreate"
             maxlength="15"
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.githubUsername"
+            label="Github Username"
+            class="q-py-xs q-pr-xs col-4"
+            @keyup.enter="
+              handleGithubUserSearch(state.newUser.githubUsername, 'Create')
+            "
+            :rules="[
+              (val) =>
+                !!state.newUser.githubUsername || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubUsernameRefCreate"
+          >
+            <template v-slot:append>
+              <q-btn
+                icon="search"
+                flat
+                @click="
+                  handleGithubUserSearch(state.newUser.githubUsername, 'Create')
+                "
+              />
+            </template>
+          </q-input>
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.githubUrl"
+            label="Github URL"
+            class="q-pl-xs q-py-xs col-8"
+            :rules="[
+              (val) => !!state.newUser.githubUrl || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubUrlRefCreate"
+            readonly
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.githubId"
+            label="Github ID"
+            class="q-py-xs q-pr-xs col-4"
+            :rules="[
+              (val) => !!state.newUser.githubId || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubIdRefCreate"
+            readonly
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.nodeId"
+            label="Node ID"
+            class="q-pa-xs col-4"
+            :rules="[
+              (val) => !!state.newUser.nodeId || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="nodeIdRefCreate"
+            readonly
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.githubType"
+            label="Type"
+            class="q-pl-xs q-py-xs col-4"
+            :rules="[
+              (val) => !!state.newUser.githubType || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubTypeRefCreate"
+            readonly
           />
         </div>
       </q-card-section>
@@ -287,7 +375,7 @@
             v-model="state.editedUser.zipCode"
             label="Zip Code"
             class="q-py-xs q-pr-xs col-4"
-            @keyup.enter="handleZipCodeSearch()"
+            @keyup.enter="handleZipCodeSearch(state.editedUser.zipCode, 'edit')"
             :rules="[
               (val) => !!state.editedUser.zipCode || 'This field is required',
             ]"
@@ -301,7 +389,7 @@
                 :readonly="!state.allowEdit"
                 icon="search"
                 flat
-                @click="handleZipCodeSearch()"
+                @click="handleZipCodeSearch(state.editedUser.zipCode, 'edit')"
               />
             </template>
           </q-input>
@@ -378,6 +466,92 @@
             :readonly="!state.allowEdit"
           />
         </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.githubUsername"
+            label="Github Username"
+            class="q-py-xs q-pr-xs col-4"
+            @keyup.enter="
+              handleGithubUserSearch(state.editedUser.githubUsername, 'Edit')
+            "
+            :rules="[
+              (val) =>
+                !!state.editedUser.githubUsername || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubUsernameRefEdit"
+          >
+            <template v-slot:append>
+              <q-btn
+                icon="search"
+                flat
+                @click="
+                  handleGithubUserSearch(
+                    state.editedUser.githubUsername,
+                    'Edit'
+                  )
+                "
+              />
+            </template>
+          </q-input>
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.githubUrl"
+            label="Github URL"
+            class="q-pl-xs q-py-xs col-8"
+            :rules="[
+              (val) => !!state.editedUser.githubUrl || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubUrlRefEdit"
+            readonly
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.githubId"
+            label="Github ID"
+            class="q-py-xs q-pr-xs col-4"
+            :rules="[
+              (val) => !!state.editedUser.githubId || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubIdRefEdit"
+            readonly
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.nodeId"
+            label="Node ID"
+            class="q-pa-xs col-4"
+            :rules="[
+              (val) => !!state.editedUser.nodeId || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="nodeIdRefEdit"
+            readonly
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.githubType"
+            label="Type"
+            class="q-pl-xs q-py-xs col-4"
+            :rules="[
+              (val) =>
+                !!state.editedUser.githubType || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="githubTypeRefEdit"
+            readonly
+          />
+        </div>
       </q-card-section>
 
       <q-card-actions align="right" class="bg-white text-teal">
@@ -411,10 +585,12 @@ import {
   deleteAllUsers,
 } from 'src/services/CrudService';
 import { getAddressByZipCode } from 'src/services/ZipCodeService';
+import { getGithubProfile } from 'src/services/GithubService';
 import { useQuasar } from 'quasar';
 import HeaderButton from './HeaderButton.vue';
 import { Address } from 'src/types/Address';
 import { validateNewUser } from 'src/util/validator';
+import { GithubUser } from 'src/types/GithubUser';
 
 export default defineComponent({
   name: 'UsersTable',
@@ -484,6 +660,11 @@ export default defineComponent({
     const cityRefCreate = ref();
     const stateRefCreate = ref();
     const addressNumberRefCreate = ref();
+    const githubUsernameRefCreate = ref();
+    const githubUrlRefCreate = ref();
+    const githubIdRefCreate = ref();
+    const nodeIdRefCreate = ref();
+    const githubTypeRefCreate = ref();
 
     const nameRefEdit = ref();
     const ageRefEdit = ref();
@@ -493,6 +674,11 @@ export default defineComponent({
     const cityRefEdit = ref();
     const stateRefEdit = ref();
     const addressNumberRefEdit = ref();
+    const githubUsernameRefEdit = ref();
+    const githubUrlRefEdit = ref();
+    const githubIdRefEdit = ref();
+    const nodeIdRefEdit = ref();
+    const githubTypeRefEdit = ref();
 
     onMounted(async () => {
       state.users = await getUsers();
@@ -582,15 +768,6 @@ export default defineComponent({
       });
     }
 
-    function assignAddressFields(address: Address): void {
-      state.newUser.city = address.localidade;
-      state.newUser.address = address.logradouro;
-      state.newUser.district = address.bairro;
-      state.newUser.state = address.uf;
-
-      addressNumberRefCreate.value.focus();
-    }
-
     function handleEditUser(user: User): void {
       state.dialogEditUser = true;
       state.allowEdit = true;
@@ -640,14 +817,17 @@ export default defineComponent({
       });
     }
 
-    async function handleZipCodeSearch(): Promise<void> {
+    async function handleZipCodeSearch(
+      zipCode: number,
+      func: string
+    ): Promise<void> {
       let address = {} as Address;
-      if (state.newUser.zipCode) {
+      if (zipCode) {
         try {
           $q.loading.show({
             message: 'Searching...',
           });
-          address = await getAddressByZipCode(state.newUser.zipCode);
+          address = await getAddressByZipCode(+zipCode);
         } catch (e) {
           $q.notify({
             message: 'Address not found!',
@@ -657,8 +837,8 @@ export default defineComponent({
             timeout: 2500,
           });
         } finally {
-          if (Object.keys(address)) {
-            assignAddressFields(address);
+          if (Object.values(address).length > 0) {
+            assignAddressFields(address, func);
           }
           $q.loading.hide();
         }
@@ -673,8 +853,80 @@ export default defineComponent({
       }
     }
 
+    function assignAddressFields(address: Address, func: string): void {
+      if (func === 'create') {
+        state.newUser.city = address.localidade;
+        state.newUser.address = address.logradouro;
+        state.newUser.district = address.bairro;
+        state.newUser.state = address.uf;
+
+        addressNumberRefCreate.value.focus();
+      } else if (func === 'edit') {
+        state.editedUser.city = address.localidade;
+        state.editedUser.address = address.logradouro;
+        state.editedUser.district = address.bairro;
+        state.editedUser.state = address.uf;
+
+        addressNumberRefEdit.value.focus();
+      }
+    }
+
+    async function handleGithubUserSearch(
+      username: string,
+      func: string
+    ): Promise<void> {
+      let githubUser = {} as GithubUser;
+      if (username) {
+        try {
+          $q.loading.show({
+            message: 'Searching...',
+          });
+          githubUser = await getGithubProfile(username);
+        } catch (e) {
+          $q.notify({
+            message: 'Address not found!',
+            icon: 'error',
+            position: 'top',
+            color: 'negative',
+            timeout: 2500,
+          });
+        } finally {
+          if (Object.values(githubUser).length > 0) {
+            assignGithubUserFields(githubUser, func);
+          }
+          $q.loading.hide();
+        }
+      } else if (state.allowEdit) {
+        $q.notify({
+          message: 'You must type a zip code!',
+          icon: 'warning',
+          position: 'top',
+          color: 'warning',
+          timeout: 2500,
+        });
+      }
+    }
+
+    function assignGithubUserFields(
+      githubUser: GithubUser,
+      func: string
+    ): void {
+      if (func === 'Create') {
+        state.newUser.githubUrl = githubUser.html_url;
+        state.newUser.githubId = githubUser.id;
+        state.newUser.nodeId = githubUser.node_id;
+        state.newUser.githubType = githubUser.type;
+      } else if (func === 'Edit') {
+        state.editedUser.githubUrl = githubUser.html_url;
+        state.editedUser.githubId = githubUser.id;
+        state.editedUser.nodeId = githubUser.node_id;
+        state.editedUser.githubType = githubUser.type;
+      }
+    }
+
     return {
       state,
+
       addressNumberRefCreate,
       nameRefCreate,
       ageRefCreate,
@@ -683,6 +935,12 @@ export default defineComponent({
       districtRefCreate,
       cityRefCreate,
       stateRefCreate,
+      githubUsernameRefCreate,
+      githubUrlRefCreate,
+      githubIdRefCreate,
+      nodeIdRefCreate,
+      githubTypeRefCreate,
+
       addressNumberRefEdit,
       nameRefEdit,
       ageRefEdit,
@@ -691,6 +949,12 @@ export default defineComponent({
       districtRefEdit,
       cityRefEdit,
       stateRefEdit,
+      githubUsernameRefEdit,
+      githubUrlRefEdit,
+      githubIdRefEdit,
+      nodeIdRefEdit,
+      githubTypeRefEdit,
+
       addUser,
       deleteAll,
       handleCloseDialog,
@@ -700,6 +964,7 @@ export default defineComponent({
       handleEditUser,
       handleViewUser,
       handleZipCodeSearch,
+      handleGithubUserSearch,
     };
   },
 });
