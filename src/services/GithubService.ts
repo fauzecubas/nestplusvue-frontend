@@ -1,7 +1,7 @@
 import { GithubUser } from 'src/types/GithubUser';
 import { gitHubApi } from './Api';
 
-async function getGitHubProfile(gitHubUser: string): Promise<GithubUser> {
+async function getGithubProfile(gitHubUser: string): Promise<GithubUser> {
   try {
     const response = await gitHubApi.get(`users?q=${gitHubUser}`);
 
@@ -16,4 +16,4 @@ async function getGitHubProfile(gitHubUser: string): Promise<GithubUser> {
   }
 }
 
-export { getGitHubProfile };
+export { getGithubProfile };

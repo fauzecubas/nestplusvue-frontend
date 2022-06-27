@@ -42,6 +42,11 @@ async function createUser(user: User): Promise<void> {
       city: `${user.city}`,
       district: `${user.district}`,
       state: `${user.state}`,
+      githubUsername: `${user.githubUsername}`,
+      githubUrl: `${user.githubUrl}`,
+      githubId: user.githubId,
+      nodeId: `${user.nodeId}`,
+      githubType: `${user.githubType}`,
     };
 
     await crudApi.post('users/', data);
@@ -62,6 +67,11 @@ async function updateUser(user: User, id: number): Promise<void> {
       city: `${user.city}`,
       district: `${user.district}`,
       state: `${user.state}`,
+      githubUsername: `${user.githubUsername}`,
+      githubUrl: `${user.githubUrl}`,
+      githubId: user.githubId,
+      nodeId: `${user.nodeId}`,
+      githubType: `${user.githubType}`,
     });
   } catch (e) {
     console.log(e);
