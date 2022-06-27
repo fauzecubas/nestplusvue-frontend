@@ -1,9 +1,9 @@
 import { User } from 'src/types/User';
-import api from './Api';
+import { crudApi } from './Api';
 
 async function getAll(): Promise<User[]> {
   try {
-    const response = await api.get('users');
+    const response = await crudApi.get('users');
 
     console.log(response);
 
@@ -20,7 +20,7 @@ async function getAll(): Promise<User[]> {
 
 async function getUser(id: number): Promise<User[]> {
   try {
-    const response = await api.get(`users/${id}`);
+    const response = await crudApi.get(`users/${id}`);
 
     console.log(response.data);
 
@@ -35,13 +35,30 @@ async function getUser(id: number): Promise<User[]> {
   }
 }
 
-async function deleteUser(id: number): Promise<void> {
+async function createUser(user: User): Promise<void> {
   try {
-    await api.delete(`users/${id}`);
+    await crudApi.post('users/', {
+      name: `${user.name}`,
+      age: +user.age,
+      zipCode: +user.zipCode,
+      address: `${user.address}`,
+      addressNumber: `${user.addressNumber}`,
+      city: `${user.city}`,
+      district: `${user.district}`,
+    });
   } catch (e) {
     console.log(e);
     throw e;
   }
 }
 
-export { getAll, getUser, deleteUser };
+async function deleteUser(id: number): Promise<void> {
+  try {
+    await crudApi.delete(`users/${id}`);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
+export { getAll, getUser, createUser, deleteUser };
