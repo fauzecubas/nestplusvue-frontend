@@ -45,6 +45,7 @@ async function createUser(user: User): Promise<void> {
       addressNumber: `${user.addressNumber}`,
       city: `${user.city}`,
       district: `${user.district}`,
+      state: `${user.state}`,
     });
   } catch (e) {
     console.log(e);

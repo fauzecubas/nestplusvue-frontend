@@ -83,8 +83,6 @@
             :rules="[(val) => !!state.newUser.age || 'This field is required']"
             hide-bottom-space
             ref="ageRef"
-            type="number"
-            autogrow
             maxlength="3"
           />
         </div>
@@ -101,8 +99,6 @@
             ]"
             hide-bottom-space
             ref="zipCodeRef"
-            type="number"
-            autogrow
             maxlength="12"
           >
             <template v-slot:append>
@@ -135,8 +131,6 @@
             ]"
             hide-bottom-space
             ref="addressNumberRef"
-            type="number"
-            autogrow
             maxlength="6"
           />
           <q-input
@@ -290,7 +284,12 @@ export default defineComponent({
         } catch (error) {
           console.log(error);
         } finally {
-          const id = state.users[state.users.length - 1].id + 1;
+          let id: number;
+          if (state.users.length) {
+            id = state.users[state.users.length - 1].id + 1;
+          } else {
+            id = 1;
+          }
           state.newUser.id = id;
 
           state.users.push(state.newUser);
@@ -314,7 +313,6 @@ export default defineComponent({
     }
 
     function handleDelete(user: User): void {
-      console.log(user);
       $q.dialog({
         title: 'Confirm',
         persistent: true,
@@ -332,7 +330,6 @@ export default defineComponent({
         const index = state.users.findIndex((u) => u.id === user.id);
         state.users.splice(index, 1);
       });
-      console.log(user);
     }
 
     async function handleZipCodeSearch(): Promise<void> {
@@ -365,6 +362,7 @@ export default defineComponent({
     }
 
     function assignAddressFields(address: Address): void {
+      console.log(address);
       state.newUser.city = address.localidade;
       state.newUser.address = address.logradouro;
       state.newUser.district = address.bairro;
