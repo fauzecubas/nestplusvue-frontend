@@ -18,6 +18,9 @@
     :rows="state.users"
     :columns="state.columns"
     row-key="id"
+    :pagination="{
+      rowsPerPage: 10,
+    }"
   >
     <template v-slot:body="props">
       <q-tr :props="props">
@@ -27,7 +30,10 @@
         <q-td key="name" :props="props">{{ props.row.name }}</q-td>
         <q-td key="age" :props="props">{{ props.row.age }}</q-td>
         <q-td key="githubUser" :props="props">{{ props.row.githubUser }}</q-td>
-        <q-td key="address" :props="props">{{ props.row.address }}</q-td>
+        <q-td key="address" :props="props"
+          >{{ props.row.address }}, {{ props.row.addressNumber }} -
+          {{ props.row.city }}/{{ props.row.state }}</q-td
+        >
         <q-td key="actions" :props="props">
           <q-btn
             dense
@@ -63,6 +69,10 @@
             v-model="state.newUser.name"
             label="Name"
             class="q-pr-xs q-py-xs col-9"
+            :rules="[(val) => !!state.newUser.name || 'This field is required']"
+            hide-bottom-space
+            ref="nameRef"
+            maxlength="30"
           />
           <q-input
             dense
@@ -70,6 +80,12 @@
             v-model="state.newUser.age"
             label="Age"
             class="q-pl-xs q-py-xs col-3"
+            :rules="[(val) => !!state.newUser.age || 'This field is required']"
+            hide-bottom-space
+            ref="ageRef"
+            type="number"
+            autogrow
+            maxlength="3"
           />
         </div>
         <div class="row col-12">
@@ -80,6 +96,14 @@
             label="Zip Code"
             class="q-py-xs q-pr-xs col-4"
             @keyup.enter="handleZipCodeSearch()"
+            :rules="[
+              (val) => !!state.newUser.zipCode || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="zipCodeRef"
+            type="number"
+            autogrow
+            maxlength="12"
           >
             <template v-slot:append>
               <q-btn icon="search" flat @click="handleZipCodeSearch()" />
@@ -91,6 +115,11 @@
             v-model="state.newUser.address"
             label="Address"
             class="q-pl-xs q-py-xs col-8"
+            :rules="[
+              (val) => !!state.newUser.address || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="addressRef"
           />
         </div>
         <div class="row col-12">
@@ -99,22 +128,53 @@
             outlined
             v-model="state.newUser.addressNumber"
             label="Address Number"
+            class="q-py-xs q-pr-xs col-3"
+            :rules="[
+              (val) =>
+                !!state.newUser.addressNumber || 'This field is required',
+            ]"
+            hide-bottom-space
             ref="addressNumberRef"
-            class="q-py-xs q-pr-xs col-4"
+            type="number"
+            autogrow
+            maxlength="6"
           />
           <q-input
             dense
             outlined
             v-model="state.newUser.district"
             label="District"
-            class="q-pa-xs col-4"
+            class="q-pa-xs col-3"
+            :rules="[
+              (val) => !!state.newUser.district || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="districtRef"
+            maxlength="15"
           />
           <q-input
             dense
             outlined
             v-model="state.newUser.city"
             label="City"
-            class="q-pl-xs q-py-xs col-4"
+            class="q-pa-xs col-3"
+            :rules="[(val) => !!state.newUser.city || 'This field is required']"
+            hide-bottom-space
+            ref="cityRef"
+            maxlength="15"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.state"
+            label="State"
+            class="q-pl-xs q-py-xs col-3"
+            :rules="[
+              (val) => !!state.newUser.state || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="stateRef"
+            maxlength="15"
           />
         </div>
       </q-card-section>
@@ -141,6 +201,7 @@ import { getAddressByZipCode } from 'src/services/ZipCodeService';
 import { useQuasar } from 'quasar';
 import HeaderButton from './HeaderButton.vue';
 import { Address } from 'src/types/Address';
+import { validateNewUser } from 'src/util/validator';
 
 export default defineComponent({
   name: 'UsersTable',
@@ -198,6 +259,14 @@ export default defineComponent({
       newUser: {} as User,
     });
     const $q = useQuasar();
+    const nameRef = ref();
+    const ageRef = ref();
+    const zipCodeRef = ref();
+    const addressRef = ref();
+    const addressnumberRef = ref();
+    const districtRef = ref();
+    const cityRef = ref();
+    const stateRef = ref();
     const addressNumberRef = ref();
 
     onMounted(async () => {
@@ -207,8 +276,6 @@ export default defineComponent({
     async function getUsers(): Promise<User[]> {
       const users = await getAll();
 
-      console.log(users);
-
       return users;
     }
 
@@ -216,15 +283,38 @@ export default defineComponent({
       console.log(user);
     }
 
-    async function handleCreateUser() {
-      await createUser(state.newUser);
+    async function handleCreateUser(): Promise<void> {
+      if (validateNewUser(state.newUser)) {
+        try {
+          await createUser(state.newUser);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          const id = state.users[state.users.length - 1].id + 1;
+          state.newUser.id = id;
+
+          state.users.push(state.newUser);
+
+          state.newUser = {} as User;
+          state.dialogNewUser = false;
+        }
+      } else {
+        $q.notify({
+          message: 'Fill all required fields!',
+          icon: 'warning',
+          position: 'top',
+          color: 'warning',
+          timeout: 2500,
+        });
+      }
     }
 
-    function handleCloseDialog(user: User) {
-      console.log('closeDialog');
+    function handleCloseDialog(): void {
+      state.newUser = {} as User;
     }
 
-    function handleDelete(user: User) {
+    function handleDelete(user: User): void {
+      console.log(user);
       $q.dialog({
         title: 'Confirm',
         persistent: true,
@@ -240,12 +330,12 @@ export default defineComponent({
       }).onOk(async () => {
         await deleteUser(user.id);
         const index = state.users.findIndex((u) => u.id === user.id);
-        state.users.splice(index);
+        state.users.splice(index, 1);
       });
       console.log(user);
     }
 
-    async function handleZipCodeSearch() {
+    async function handleZipCodeSearch(): Promise<void> {
       let address = {} as Address;
       if (state.newUser.zipCode) {
         try {
@@ -274,26 +364,37 @@ export default defineComponent({
       }
     }
 
-    function assignAddressFields(address: Address) {
+    function assignAddressFields(address: Address): void {
       state.newUser.city = address.localidade;
       state.newUser.address = address.logradouro;
       state.newUser.district = address.bairro;
+      state.newUser.state = address.uf;
 
       addressNumberRef.value.focus();
     }
 
-    function addUser() {
+    function addUser(): void {
       state.dialogNewUser = true;
-      console.log('emit add user');
+      setTimeout(() => {
+        nameRef.value.focus();
+      }, 300);
     }
 
-    function deleteAll() {
+    function deleteAll(): void {
       console.log('emit delete all');
     }
 
     return {
       state,
       addressNumberRef,
+      nameRef,
+      ageRef,
+      zipCodeRef,
+      addressRef,
+      addressnumberRef,
+      districtRef,
+      cityRef,
+      stateRef,
       addUser,
       deleteAll,
       handleCloseDialog,
