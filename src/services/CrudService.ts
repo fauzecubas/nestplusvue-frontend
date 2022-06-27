@@ -53,6 +53,24 @@ async function createUser(user: User): Promise<void> {
   }
 }
 
+async function updateUser(user: User, id: number): Promise<void> {
+  try {
+    await crudApi.patch(`users/${id}`, {
+      name: `${user.name}`,
+      age: +user.age,
+      zipCode: +user.zipCode,
+      address: `${user.address}`,
+      addressNumber: `${user.addressNumber}`,
+      city: `${user.city}`,
+      district: `${user.district}`,
+      state: `${user.state}`,
+    });
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
 async function deleteUser(id: number): Promise<void> {
   try {
     await crudApi.delete(`users/${id}`);
@@ -62,4 +80,13 @@ async function deleteUser(id: number): Promise<void> {
   }
 }
 
-export { getAll, getUser, createUser, deleteUser };
+async function deleteAllUsers(): Promise<void> {
+  try {
+    await crudApi.delete('users');
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
+export { getAll, getUser, createUser, updateUser, deleteUser, deleteAllUsers };

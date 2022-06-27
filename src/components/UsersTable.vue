@@ -21,6 +21,7 @@
     :pagination="{
       rowsPerPage: 10,
     }"
+    table-header-class="text-italic"
   >
     <template v-slot:body="props">
       <q-tr :props="props">
@@ -40,7 +41,7 @@
             round
             flat
             color="warning"
-            @click="handleEdit(props.row)"
+            @click="handleEditUser(props.row)"
             icon="edit"
           ></q-btn>
           <q-btn
@@ -51,10 +52,28 @@
             @click="handleDelete(props.row)"
             icon="delete"
           ></q-btn>
+          <q-btn
+            dense
+            round
+            flat
+            color="blue"
+            @click="handleViewUser(props.row)"
+            icon="visibility"
+          ></q-btn>
         </q-td>
       </q-tr>
     </template>
+
+    <template v-slot:no-data="">
+      <div class="full-width text-warning row flex-center q-pa-md">
+        <q-icon size="2em" name="sentiment_dissatisfied" class="q-pr-xs" />
+        <span> I'm sorry... No user found</span>
+        <q-icon size="2em" name="warning" class="q-pl-xs" />
+      </div>
+    </template>
   </q-table>
+
+  <!-- ------------------------CREATE USER DIALOG------------------------ -->
   <q-dialog v-model="state.dialogNewUser" persistent>
     <q-card style="width: 700px; max-width: 80vw">
       <q-card-section>
@@ -71,7 +90,7 @@
             class="q-pr-xs q-py-xs col-9"
             :rules="[(val) => !!state.newUser.name || 'This field is required']"
             hide-bottom-space
-            ref="nameRef"
+            ref="nameRefCreate"
             maxlength="30"
           />
           <q-input
@@ -82,7 +101,7 @@
             class="q-pl-xs q-py-xs col-3"
             :rules="[(val) => !!state.newUser.age || 'This field is required']"
             hide-bottom-space
-            ref="ageRef"
+            ref="ageRefCreate"
             maxlength="3"
           />
         </div>
@@ -98,7 +117,7 @@
               (val) => !!state.newUser.zipCode || 'This field is required',
             ]"
             hide-bottom-space
-            ref="zipCodeRef"
+            ref="zipCodeRefCreate"
             maxlength="12"
           >
             <template v-slot:append>
@@ -115,7 +134,7 @@
               (val) => !!state.newUser.address || 'This field is required',
             ]"
             hide-bottom-space
-            ref="addressRef"
+            ref="addressRefCreate"
           />
         </div>
         <div class="row col-12">
@@ -130,7 +149,7 @@
                 !!state.newUser.addressNumber || 'This field is required',
             ]"
             hide-bottom-space
-            ref="addressNumberRef"
+            ref="addressNumberRefCreate"
             maxlength="6"
           />
           <q-input
@@ -143,7 +162,7 @@
               (val) => !!state.newUser.district || 'This field is required',
             ]"
             hide-bottom-space
-            ref="districtRef"
+            ref="districtRefCreate"
             maxlength="15"
           />
           <q-input
@@ -154,7 +173,7 @@
             class="q-pa-xs col-3"
             :rules="[(val) => !!state.newUser.city || 'This field is required']"
             hide-bottom-space
-            ref="cityRef"
+            ref="cityRefCreate"
             maxlength="15"
           />
           <q-input
@@ -167,7 +186,7 @@
               (val) => !!state.newUser.state || 'This field is required',
             ]"
             hide-bottom-space
-            ref="stateRef"
+            ref="stateRefCreate"
             maxlength="15"
           />
         </div>
@@ -181,16 +200,190 @@
           @click="handleCloseDialog()"
           v-close-popup
         />
-        <q-btn flat label="CREATE" @click="handleCreateUser()" />
+        <q-btn flat label="CREATE" @click="confirmCreateUser()" />
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <!-- ------------------------CREATE USER DIALOG------------------------ -->
+
+  <!-- ------------------------EDIT USER DIALOG------------------------ -->
+  <q-dialog v-model="state.dialogEditUser" persistent>
+    <q-card style="width: 700px; max-width: 80vw">
+      <q-card-section>
+        <div class="text-h6">Edit User</div>
+      </q-card-section>
+
+      <q-card-section class="q-py-none">
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.id"
+            label="ID"
+            class="q-pr-xs q-py-xs col-2"
+            readonly
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.name"
+            label="Name"
+            class="q-pr-xs q-py-xs col-9"
+            :rules="[
+              (val) => !!state.editedUser.name || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="nameRefEdit"
+            maxlength="30"
+            :readonly="!state.allowEdit"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.age"
+            label="Age"
+            class="q-pl-xs q-py-xs col-3"
+            :rules="[
+              (val) => !!state.editedUser.age || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="ageRefEdit"
+            maxlength="3"
+            :readonly="!state.allowEdit"
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.zipCode"
+            label="Zip Code"
+            class="q-py-xs q-pr-xs col-4"
+            @keyup.enter="handleZipCodeSearch()"
+            :rules="[
+              (val) => !!state.editedUser.zipCode || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="zipCodeRefEdit"
+            maxlength="12"
+            :readonly="!state.allowEdit"
+          >
+            <template v-slot:append>
+              <q-btn
+                :readonly="!state.allowEdit"
+                icon="search"
+                flat
+                @click="handleZipCodeSearch()"
+              />
+            </template>
+          </q-input>
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.address"
+            label="Address"
+            class="q-pl-xs q-py-xs col-8"
+            :rules="[
+              (val) => !!state.editedUser.address || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="addressRefEdit"
+            :readonly="!state.allowEdit"
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.addressNumber"
+            label="Address Number"
+            class="q-py-xs q-pr-xs col-3"
+            :rules="[
+              (val) =>
+                !!state.editedUser.addressNumber || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="addressNumberRefEdit"
+            maxlength="6"
+            :readonly="!state.allowEdit"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.district"
+            label="District"
+            class="q-pa-xs col-3"
+            :rules="[
+              (val) => !!state.editedUser.district || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="districtRefEdit"
+            maxlength="15"
+            :readonly="!state.allowEdit"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.city"
+            label="City"
+            class="q-pa-xs col-3"
+            :rules="[
+              (val) => !!state.editedUser.city || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="cityRefEdit"
+            maxlength="15"
+            :readonly="!state.allowEdit"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.editedUser.state"
+            label="State"
+            class="q-pl-xs q-py-xs col-3"
+            :rules="[
+              (val) => !!state.editedUser.state || 'This field is required',
+            ]"
+            hide-bottom-space
+            ref="stateRefEdit"
+            maxlength="15"
+            :readonly="!state.allowEdit"
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="bg-white text-teal">
+        <div v-if="state.allowEdit">
+          <q-btn
+            flat
+            color="negative"
+            label="CANCEL"
+            @click="handleCloseDialog()"
+            v-close-popup
+          />
+          <q-btn flat label="CONFIRM" @click="confirmEditUser()" />
+        </div>
+        <div v-else>
+          <q-btn flat label="OK" v-close-popup />
+        </div>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <!-- ------------------------EDIT USER DIALOG------------------------ -->
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { User } from 'src/types/User';
-import { getAll, createUser, deleteUser } from 'src/services/CrudService';
+import {
+  getAll,
+  createUser,
+  updateUser,
+  deleteUser,
+  deleteAllUsers,
+} from 'src/services/CrudService';
 import { getAddressByZipCode } from 'src/services/ZipCodeService';
 import { useQuasar } from 'quasar';
 import HeaderButton from './HeaderButton.vue';
@@ -248,20 +441,30 @@ export default defineComponent({
           field: 'actions',
         },
       ],
-      users: [{ name: 'fauze' }] as User[],
-      dialogNewUser: false,
+      users: [] as User[],
       newUser: {} as User,
+      editedUser: {} as User,
+      dialogNewUser: false,
+      dialogEditUser: false,
+      allowEdit: true,
     });
     const $q = useQuasar();
-    const nameRef = ref();
-    const ageRef = ref();
-    const zipCodeRef = ref();
-    const addressRef = ref();
-    const addressnumberRef = ref();
-    const districtRef = ref();
-    const cityRef = ref();
-    const stateRef = ref();
-    const addressNumberRef = ref();
+    const nameRefCreate = ref();
+    const ageRefCreate = ref();
+    const zipCodeRefCreate = ref();
+    const addressRefCreate = ref();
+    const districtRefCreate = ref();
+    const cityRefCreate = ref();
+    const stateRefCreate = ref();
+    const addressNumberRefCreate = ref();
+    const nameRefEdit = ref();
+    const ageRefEdit = ref();
+    const zipCodeRefEdit = ref();
+    const addressRefEdit = ref();
+    const districtRefEdit = ref();
+    const cityRefEdit = ref();
+    const stateRefEdit = ref();
+    const addressNumberRefEdit = ref();
 
     onMounted(async () => {
       state.users = await getUsers();
@@ -273,11 +476,7 @@ export default defineComponent({
       return users;
     }
 
-    function handleEdit(user: User): void {
-      console.log(user);
-    }
-
-    async function handleCreateUser(): Promise<void> {
+    async function confirmCreateUser(): Promise<void> {
       if (validateNewUser(state.newUser)) {
         try {
           await createUser(state.newUser);
@@ -296,6 +495,33 @@ export default defineComponent({
 
           state.newUser = {} as User;
           state.dialogNewUser = false;
+        }
+      } else {
+        $q.notify({
+          message: 'Fill all required fields!',
+          icon: 'warning',
+          position: 'top',
+          color: 'warning',
+          timeout: 2500,
+        });
+      }
+    }
+
+    async function confirmEditUser(): Promise<void> {
+      if (validateNewUser(state.editedUser)) {
+        try {
+          await updateUser(state.editedUser, state.editedUser.id);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          const index = state.users.findIndex(
+            (u) => u.id === state.editedUser.id
+          );
+          if (index !== -1) {
+            state.users[index] = { ...state.editedUser };
+          }
+
+          state.dialogEditUser = false;
         }
       } else {
         $q.notify({
@@ -336,6 +562,9 @@ export default defineComponent({
       let address = {} as Address;
       if (state.newUser.zipCode) {
         try {
+          $q.loading.show({
+            message: 'Searching...',
+          });
           address = await getAddressByZipCode(state.newUser.zipCode);
         } catch (e) {
           $q.notify({
@@ -349,8 +578,9 @@ export default defineComponent({
           if (Object.keys(address)) {
             assignAddressFields(address);
           }
+          $q.loading.hide();
         }
-      } else {
+      } else if (state.allowEdit) {
         $q.notify({
           message: 'You must type a zip code!',
           icon: 'warning',
@@ -368,37 +598,82 @@ export default defineComponent({
       state.newUser.district = address.bairro;
       state.newUser.state = address.uf;
 
-      addressNumberRef.value.focus();
+      addressNumberRefCreate.value.focus();
     }
 
     function addUser(): void {
       state.dialogNewUser = true;
+      state.allowEdit = true;
       setTimeout(() => {
-        nameRef.value.focus();
+        nameRefCreate.value.focus();
+      }, 300);
+    }
+
+    function handleEditUser(user: User): void {
+      state.dialogEditUser = true;
+      state.allowEdit = true;
+      setTimeout(() => {
+        nameRefEdit.value.focus();
+        state.editedUser = { ...user };
+        console.log(state.editedUser);
+      }, 300);
+    }
+
+    function handleViewUser(user: User): void {
+      state.dialogEditUser = true;
+      state.allowEdit = false;
+      setTimeout(() => {
+        nameRefEdit.value.focus();
+        state.editedUser = { ...user };
+        console.log(state.editedUser);
       }, 300);
     }
 
     function deleteAll(): void {
-      console.log('emit delete all');
+      $q.dialog({
+        title: 'Confirm',
+        persistent: true,
+        message: 'This action will delete all users. Continue?',
+        cancel: {
+          push: true,
+          color: 'negative',
+        },
+        ok: {
+          push: true,
+          label: 'YES',
+        },
+      }).onOk(async () => {
+        await deleteAllUsers();
+        state.users = [] as User[];
+      });
     }
 
     return {
       state,
-      addressNumberRef,
-      nameRef,
-      ageRef,
-      zipCodeRef,
-      addressRef,
-      addressnumberRef,
-      districtRef,
-      cityRef,
-      stateRef,
+      addressNumberRefCreate,
+      nameRefCreate,
+      ageRefCreate,
+      zipCodeRefCreate,
+      addressRefCreate,
+      districtRefCreate,
+      cityRefCreate,
+      stateRefCreate,
+      addressNumberRefEdit,
+      nameRefEdit,
+      ageRefEdit,
+      zipCodeRefEdit,
+      addressRefEdit,
+      districtRefEdit,
+      cityRefEdit,
+      stateRefEdit,
       addUser,
       deleteAll,
       handleCloseDialog,
-      handleCreateUser,
+      confirmCreateUser,
+      confirmEditUser,
       handleDelete,
-      handleEdit,
+      handleEditUser,
+      handleViewUser,
       handleZipCodeSearch,
     };
   },
