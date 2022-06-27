@@ -1,4 +1,18 @@
 <template>
+  <div class="row q-pb-sm">
+    <header-button
+      @addUser="addUser()"
+      :icon="'add_circle'"
+      :function="'add'"
+      :label="'Create User'"
+    />
+    <header-button
+      @deleteAll="deleteAll()"
+      :icon="'delete'"
+      :function="'deleteAll'"
+      :label="'Delete All'"
+    />
+  </div>
   <q-table
     title="Users"
     :rows="state.users"
@@ -35,16 +49,102 @@
       </q-tr>
     </template>
   </q-table>
+  <q-dialog v-model="state.dialogNewUser" persistent>
+    <q-card style="width: 700px; max-width: 80vw">
+      <q-card-section>
+        <div class="text-h6">Create User</div>
+      </q-card-section>
+
+      <q-card-section class="q-py-none">
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.name"
+            label="Name"
+            class="q-pr-xs q-py-xs col-9"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.age"
+            label="Age"
+            class="q-pl-xs q-py-xs col-3"
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.zipCode"
+            label="Zip Code"
+            class="q-py-xs q-pr-xs col-4"
+            @keyup.enter="handleZipCodeSearch()"
+          >
+            <template v-slot:append>
+              <q-btn icon="search" flat @click="handleZipCodeSearch()" />
+            </template>
+          </q-input>
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.address"
+            label="Address"
+            class="q-pl-xs q-py-xs col-8"
+          />
+        </div>
+        <div class="row col-12">
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.addressNumber"
+            label="Address Number"
+            ref="addressNumberRef"
+            class="q-py-xs q-pr-xs col-4"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.district"
+            label="District"
+            class="q-pa-xs col-4"
+          />
+          <q-input
+            dense
+            outlined
+            v-model="state.newUser.city"
+            label="City"
+            class="q-pl-xs q-py-xs col-4"
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="bg-white text-teal">
+        <q-btn
+          flat
+          color="negative"
+          label="CANCEL"
+          @click="handleCloseDialog()"
+          v-close-popup
+        />
+        <q-btn flat label="CREATE" @click="handleCreateUser()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from 'vue';
+import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { User } from 'src/types/User';
-import { getAll, deleteUser } from 'src/services/CrudService';
+import { getAll, createUser, deleteUser } from 'src/services/CrudService';
+import { getAddressByZipCode } from 'src/services/ZipCodeService';
 import { useQuasar } from 'quasar';
+import HeaderButton from './HeaderButton.vue';
+import { Address } from 'src/types/Address';
 
 export default defineComponent({
   name: 'UsersTable',
+  components: { HeaderButton },
 
   setup() {
     const state = reactive({
@@ -94,8 +194,11 @@ export default defineComponent({
         },
       ],
       users: [{ name: 'fauze' }] as User[],
+      dialogNewUser: false,
+      newUser: {} as User,
     });
     const $q = useQuasar();
+    const addressNumberRef = ref();
 
     onMounted(async () => {
       state.users = await getUsers();
@@ -111,6 +214,14 @@ export default defineComponent({
 
     function handleEdit(user: User) {
       console.log(user);
+    }
+
+    async function handleCreateUser() {
+      await createUser(state.newUser);
+    }
+
+    function handleCloseDialog(user: User) {
+      console.log('closeDialog');
     }
 
     function handleDelete(user: User) {
@@ -134,7 +245,63 @@ export default defineComponent({
       console.log(user);
     }
 
-    return { state, handleEdit, handleDelete };
+    async function handleZipCodeSearch() {
+      let address = {} as Address;
+      if (state.newUser.zipCode) {
+        try {
+          address = await getAddressByZipCode(state.newUser.zipCode);
+        } catch (e) {
+          $q.notify({
+            message: 'Address not found!',
+            icon: 'error',
+            position: 'top',
+            color: 'negative',
+            timeout: 2500,
+          });
+        } finally {
+          if (Object.keys(address)) {
+            assignAddressFields(address);
+          }
+        }
+      } else {
+        $q.notify({
+          message: 'You must type a zip code!',
+          icon: 'warning',
+          position: 'top',
+          color: 'warning',
+          timeout: 2500,
+        });
+      }
+    }
+
+    function assignAddressFields(address: Address) {
+      state.newUser.city = address.localidade;
+      state.newUser.address = address.logradouro;
+      state.newUser.district = address.bairro;
+
+      addressNumberRef.value.focus();
+    }
+
+    function addUser() {
+      state.dialogNewUser = true;
+      console.log('emit add user');
+    }
+
+    function deleteAll() {
+      console.log('emit delete all');
+    }
+
+    return {
+      state,
+      addressNumberRef,
+      addUser,
+      deleteAll,
+      handleCloseDialog,
+      handleCreateUser,
+      handleDelete,
+      handleEdit,
+      handleZipCodeSearch,
+    };
   },
 });
 </script>
