@@ -14,4 +14,6 @@ export interface User {
   address: string;
 
   addressNumber: string;
+
+  state: string;
 }
