@@ -15,6 +15,8 @@
   </div>
   <q-table
     title="Users"
+    bordered
+    flat
     :rows="state.users"
     :columns="state.columns"
     row-key="id"
@@ -43,7 +45,15 @@
             color="warning"
             @click="handleEditUser(props.row)"
             icon="edit"
-          ></q-btn>
+          >
+            <q-tooltip
+              anchor="top middle"
+              self="bottom middle"
+              :offset="[10, 10]"
+            >
+              <strong>Edit</strong>
+            </q-tooltip></q-btn
+          >
           <q-btn
             dense
             round
@@ -51,7 +61,15 @@
             color="negative"
             @click="handleDelete(props.row)"
             icon="delete"
-          ></q-btn>
+          >
+            <q-tooltip
+              anchor="top middle"
+              self="bottom middle"
+              :offset="[10, 10]"
+            >
+              <strong>Delete</strong>
+            </q-tooltip>
+          </q-btn>
           <q-btn
             dense
             round
@@ -59,7 +77,14 @@
             color="blue"
             @click="handleViewUser(props.row)"
             icon="visibility"
-          ></q-btn>
+            ><q-tooltip
+              anchor="top middle"
+              self="bottom middle"
+              :offset="[10, 10]"
+            >
+              <strong>View</strong>
+            </q-tooltip></q-btn
+          >
         </q-td>
       </q-tr>
     </template>
