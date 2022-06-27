@@ -5,8 +5,6 @@ async function getAll(): Promise<User[]> {
   try {
     const response = await crudApi.get('users');
 
-    console.log(response);
-
     if (response.status === 200) {
       return response.data;
     }
@@ -22,8 +20,6 @@ async function getUser(id: number): Promise<User[]> {
   try {
     const response = await crudApi.get(`users/${id}`);
 
-    console.log(response.data);
-
     if (response.status === 200) {
       return response.data;
     }
@@ -37,7 +33,7 @@ async function getUser(id: number): Promise<User[]> {
 
 async function createUser(user: User): Promise<void> {
   try {
-    await crudApi.post('users/', {
+    const data = {
       name: `${user.name}`,
       age: +user.age,
       zipCode: +user.zipCode,
@@ -46,7 +42,9 @@ async function createUser(user: User): Promise<void> {
       city: `${user.city}`,
       district: `${user.district}`,
       state: `${user.state}`,
-    });
+    };
+
+    await crudApi.post('users/', data);
   } catch (e) {
     console.log(e);
     throw e;

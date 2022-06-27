@@ -235,7 +235,8 @@
   <q-dialog v-model="state.dialogEditUser" persistent>
     <q-card style="width: 700px; max-width: 80vw">
       <q-card-section>
-        <div class="text-h6">Edit User</div>
+        <div v-if="state.allowEdit" class="text-h6">Edit User</div>
+        <div v-else class="text-h6">View User</div>
       </q-card-section>
 
       <q-card-section class="q-py-none">
@@ -474,6 +475,7 @@ export default defineComponent({
       allowEdit: true,
     });
     const $q = useQuasar();
+
     const nameRefCreate = ref();
     const ageRefCreate = ref();
     const zipCodeRefCreate = ref();
@@ -482,6 +484,7 @@ export default defineComponent({
     const cityRefCreate = ref();
     const stateRefCreate = ref();
     const addressNumberRefCreate = ref();
+
     const nameRefEdit = ref();
     const ageRefEdit = ref();
     const zipCodeRefEdit = ref();
@@ -559,10 +562,6 @@ export default defineComponent({
       }
     }
 
-    function handleCloseDialog(): void {
-      state.newUser = {} as User;
-    }
-
     function handleDelete(user: User): void {
       $q.dialog({
         title: 'Confirm',
@@ -580,6 +579,64 @@ export default defineComponent({
         await deleteUser(user.id);
         const index = state.users.findIndex((u) => u.id === user.id);
         state.users.splice(index, 1);
+      });
+    }
+
+    function assignAddressFields(address: Address): void {
+      state.newUser.city = address.localidade;
+      state.newUser.address = address.logradouro;
+      state.newUser.district = address.bairro;
+      state.newUser.state = address.uf;
+
+      addressNumberRefCreate.value.focus();
+    }
+
+    function handleEditUser(user: User): void {
+      state.dialogEditUser = true;
+      state.allowEdit = true;
+      setTimeout(() => {
+        nameRefEdit.value.focus();
+        state.editedUser = { ...user };
+      }, 300);
+    }
+
+    function handleViewUser(user: User): void {
+      state.dialogEditUser = true;
+      state.allowEdit = false;
+      setTimeout(() => {
+        nameRefEdit.value.focus();
+        state.editedUser = { ...user };
+      }, 300);
+    }
+
+    function handleCloseDialog(): void {
+      state.newUser = {} as User;
+    }
+
+    function addUser(): void {
+      state.dialogNewUser = true;
+      state.allowEdit = true;
+      setTimeout(() => {
+        nameRefCreate.value.focus();
+      }, 300);
+    }
+
+    function deleteAll(): void {
+      $q.dialog({
+        title: 'Confirm',
+        persistent: true,
+        message: 'This action will delete all users. Continue?',
+        cancel: {
+          push: true,
+          color: 'negative',
+        },
+        ok: {
+          push: true,
+          label: 'YES',
+        },
+      }).onOk(async () => {
+        await deleteAllUsers();
+        state.users = [] as User[];
       });
     }
 
@@ -614,63 +671,6 @@ export default defineComponent({
           timeout: 2500,
         });
       }
-    }
-
-    function assignAddressFields(address: Address): void {
-      console.log(address);
-      state.newUser.city = address.localidade;
-      state.newUser.address = address.logradouro;
-      state.newUser.district = address.bairro;
-      state.newUser.state = address.uf;
-
-      addressNumberRefCreate.value.focus();
-    }
-
-    function addUser(): void {
-      state.dialogNewUser = true;
-      state.allowEdit = true;
-      setTimeout(() => {
-        nameRefCreate.value.focus();
-      }, 300);
-    }
-
-    function handleEditUser(user: User): void {
-      state.dialogEditUser = true;
-      state.allowEdit = true;
-      setTimeout(() => {
-        nameRefEdit.value.focus();
-        state.editedUser = { ...user };
-        console.log(state.editedUser);
-      }, 300);
-    }
-
-    function handleViewUser(user: User): void {
-      state.dialogEditUser = true;
-      state.allowEdit = false;
-      setTimeout(() => {
-        nameRefEdit.value.focus();
-        state.editedUser = { ...user };
-        console.log(state.editedUser);
-      }, 300);
-    }
-
-    function deleteAll(): void {
-      $q.dialog({
-        title: 'Confirm',
-        persistent: true,
-        message: 'This action will delete all users. Continue?',
-        cancel: {
-          push: true,
-          color: 'negative',
-        },
-        ok: {
-          push: true,
-          label: 'YES',
-        },
-      }).onOk(async () => {
-        await deleteAllUsers();
-        state.users = [] as User[];
-      });
     }
 
     return {
