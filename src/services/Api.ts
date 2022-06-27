@@ -7,3 +7,7 @@ export const crudApi = axios.create({
 export const zipCodeApi = axios.create({
   baseURL: 'https://viacep.com.br/ws/',
 });
+
+export const gitHubApi = axios.create({
+  baseURL: 'https://api.github.com/search',
+});
