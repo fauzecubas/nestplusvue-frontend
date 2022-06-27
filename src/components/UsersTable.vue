@@ -229,7 +229,7 @@
             label="Github Username"
             class="q-py-xs q-pr-xs col-4"
             @keyup.enter="
-              handleGithubUserSearch(state.newUser.githubUsername, 'Create')
+              handleGithubUserSearch(state.newUser.githubUsername, 'create')
             "
             :rules="[
               (val) =>
@@ -243,7 +243,7 @@
                 icon="search"
                 flat
                 @click="
-                  handleGithubUserSearch(state.newUser.githubUsername, 'Create')
+                  handleGithubUserSearch(state.newUser.githubUsername, 'create')
                 "
               />
             </template>
@@ -474,7 +474,7 @@
             label="Github Username"
             class="q-py-xs q-pr-xs col-4"
             @keyup.enter="
-              handleGithubUserSearch(state.editedUser.githubUsername, 'Edit')
+              handleGithubUserSearch(state.editedUser.githubUsername, 'edit')
             "
             :rules="[
               (val) =>
@@ -490,7 +490,7 @@
                 @click="
                   handleGithubUserSearch(
                     state.editedUser.githubUsername,
-                    'Edit'
+                    'edit'
                   )
                 "
               />
@@ -911,16 +911,18 @@ export default defineComponent({
       githubUser: GithubUser,
       func: string
     ): void {
-      if (func === 'Create') {
+      if (func === 'create') {
         state.newUser.githubUrl = githubUser.html_url;
         state.newUser.githubId = githubUser.id;
         state.newUser.nodeId = githubUser.node_id;
         state.newUser.githubType = githubUser.type;
-      } else if (func === 'Edit') {
+        state.newUser.reposUrl = githubUser.repos_url;
+      } else if (func === 'edit') {
         state.editedUser.githubUrl = githubUser.html_url;
         state.editedUser.githubId = githubUser.id;
         state.editedUser.nodeId = githubUser.node_id;
         state.editedUser.githubType = githubUser.type;
+        state.editedUser.reposUrl = githubUser.repos_url;
       }
     }
 

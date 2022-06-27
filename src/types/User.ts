@@ -26,4 +26,6 @@ export interface User {
   nodeId: string;
 
   githubType: string;
+
+  reposUrl: string;
 }

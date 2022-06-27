@@ -47,6 +47,7 @@ async function createUser(user: User): Promise<void> {
       githubId: user.githubId,
       nodeId: `${user.nodeId}`,
       githubType: `${user.githubType}`,
+      reposUrl: `${user.reposUrl}`,
     };
 
     await crudApi.post('users/', data);
@@ -72,6 +73,7 @@ async function updateUser(user: User, id: number): Promise<void> {
       githubId: user.githubId,
       nodeId: `${user.nodeId}`,
       githubType: `${user.githubType}`,
+      reposUrl: `${user.reposUrl}`,
     });
   } catch (e) {
     console.log(e);
