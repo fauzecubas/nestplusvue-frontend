@@ -1,41 +1,30 @@
-# CRUD App (frontend)
+# nestplusvue-frontend
 
-A Quasar Project
+## Used Tools
+ - Vue.js 3
+ - Vue Router
+ - Quasar Framework
+ - Typescript
+ - Javascript
+ - Axios
+ - Moment.js
+ - Eslint
+ - Prettier
 
-## Install the dependencies
+### After cloning the project, install the dependencies
 ```bash
+npm i
+# or
 yarn
+```
+
+### Run the project
+```bash
+npm run dev
 # or
-npm install
+yarn dev
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
+Open http://localhost:9000 in your browser to see the project running.
 
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-### Format the files
-```bash
-yarn format
-# or
-npm run format
-```
-
-
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+***IMPORTANT: this project makes connection with a local api. You can find more information here: https://github.com/fauzecubas/nestplusvue-api***
