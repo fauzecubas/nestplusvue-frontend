@@ -593,7 +593,7 @@ import { validateNewUser } from 'src/util/validator';
 import { GithubUser } from 'src/types/GithubUser';
 
 export default defineComponent({
-  name: 'UsersTable',
+  name: 'UsersManagement',
   components: { HeaderButton },
 
   setup() {
@@ -685,8 +685,10 @@ export default defineComponent({
     });
 
     async function getUsers(): Promise<User[]> {
+      $q.loading.show();
       const users = await getAll();
 
+      $q.loading.hide();
       return users;
     }
 
