@@ -10,6 +10,11 @@
  - Moment.js
  - Eslint
  - Prettier
+ 
+# Used Services
+ - GitHub Webservice
+ - VieCEP Webservice (https://viacep.com.br/)
+ - nestplusvue-api (https://github.com/fauzecubas/nestplusvue-api) 
 
 ### After cloning the project, install the dependencies
 ```bash
@@ -27,4 +32,4 @@ yarn dev
 
 Open http://localhost:9000 in your browser to see the project running.
 
-***IMPORTANT: this project makes connection with a local api. You can find more information here: https://github.com/fauzecubas/nestplusvue-api***
+***IMPORTANT: this project needs connection with a local api. You can find more information here: https://github.com/fauzecubas/nestplusvue-api***
