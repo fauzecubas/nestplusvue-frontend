@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+export const emptyUrl = axios.create({
+  baseURL: '',
+});
+
 export const crudApi = axios.create({
   baseURL: 'http://localhost:3000/',
 });

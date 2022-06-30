@@ -28,4 +28,6 @@ export interface User {
   githubType: string;
 
   reposUrl: string;
+
+  repositories: [];
 }

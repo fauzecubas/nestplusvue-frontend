@@ -1,5 +1,5 @@
 import { GithubUser } from 'src/types/GithubUser';
-import { gitHubApi } from './Api';
+import { emptyUrl, gitHubApi } from './Api';
 
 async function getGithubProfile(gitHubUser: string): Promise<GithubUser> {
   try {
@@ -16,4 +16,19 @@ async function getGithubProfile(gitHubUser: string): Promise<GithubUser> {
   }
 }
 
-export { getGithubProfile };
+async function getRepositories(url: string): Promise<[]> {
+  try {
+    const response = await emptyUrl.get(`${url}`);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+
+    return [];
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
+export { getGithubProfile, getRepositories };
