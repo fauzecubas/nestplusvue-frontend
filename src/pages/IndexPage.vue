@@ -1,16 +1,16 @@
 <template>
   <q-page class="q-pa-md doc-container">
-    <users-table />
+    <users-management />
   </q-page>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import UsersTable from 'src/components/UsersTable.vue';
+import UsersManagement from 'src/components/UsersManagement.vue';
 
 export default defineComponent({
   name: 'IndexPage',
-  components: { UsersTable },
+  components: { UsersManagement },
   setup() {
     return {};
   },
