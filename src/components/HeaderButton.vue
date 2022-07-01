@@ -36,8 +36,6 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
-    const state = {};
-
     function addUser(): void {
       emit('addUser');
     }
@@ -54,7 +52,7 @@ export default defineComponent({
       }
     }
 
-    return { state, handleClick, props };
+    return { handleClick, props };
   },
 });
 </script>

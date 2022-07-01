@@ -128,7 +128,6 @@
             class="q-pl-xs q-py-xs col-3"
             :rules="[(val) => !!state.newUser.age || 'This field is required']"
             hide-bottom-space
-            ref="ageRefCreate"
             maxlength="3"
           />
         </div>
@@ -144,7 +143,6 @@
               (val) => !!state.newUser.zipCode || 'This field is required',
             ]"
             hide-bottom-space
-            ref="zipCodeRefCreate"
             maxlength="12"
           >
             <template v-slot:append>
@@ -165,7 +163,6 @@
               (val) => !!state.newUser.address || 'This field is required',
             ]"
             hide-bottom-space
-            ref="addressRefCreate"
           />
         </div>
         <div class="row col-12">
@@ -193,7 +190,6 @@
               (val) => !!state.newUser.district || 'This field is required',
             ]"
             hide-bottom-space
-            ref="districtRefCreate"
             maxlength="15"
           />
           <q-input
@@ -204,7 +200,6 @@
             class="q-pa-xs col-3"
             :rules="[(val) => !!state.newUser.city || 'This field is required']"
             hide-bottom-space
-            ref="cityRefCreate"
             maxlength="15"
           />
           <q-input
@@ -217,7 +212,6 @@
               (val) => !!state.newUser.state || 'This field is required',
             ]"
             hide-bottom-space
-            ref="stateRefCreate"
             maxlength="15"
           />
         </div>
@@ -236,7 +230,6 @@
                 !!state.newUser.githubUsername || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubUsernameRefCreate"
           >
             <template v-slot:append>
               <q-btn
@@ -258,7 +251,6 @@
               (val) => !!state.newUser.githubUrl || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubUrlRefCreate"
             readonly
           />
         </div>
@@ -273,7 +265,6 @@
               (val) => !!state.newUser.githubId || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubIdRefCreate"
             readonly
           />
           <q-input
@@ -286,7 +277,6 @@
               (val) => !!state.newUser.nodeId || 'This field is required',
             ]"
             hide-bottom-space
-            ref="nodeIdRefCreate"
             readonly
           />
           <q-input
@@ -299,7 +289,6 @@
               (val) => !!state.newUser.githubType || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubTypeRefCreate"
             readonly
           />
         </div>
@@ -363,7 +352,6 @@
               (val) => !!state.editedUser.age || 'This field is required',
             ]"
             hide-bottom-space
-            ref="ageRefEdit"
             maxlength="3"
             :readonly="!state.allowEdit"
           />
@@ -380,7 +368,6 @@
               (val) => !!state.editedUser.zipCode || 'This field is required',
             ]"
             hide-bottom-space
-            ref="zipCodeRefEdit"
             maxlength="12"
             :readonly="!state.allowEdit"
           >
@@ -403,7 +390,6 @@
               (val) => !!state.editedUser.address || 'This field is required',
             ]"
             hide-bottom-space
-            ref="addressRefEdit"
             :readonly="!state.allowEdit"
           />
         </div>
@@ -433,7 +419,6 @@
               (val) => !!state.editedUser.district || 'This field is required',
             ]"
             hide-bottom-space
-            ref="districtRefEdit"
             maxlength="15"
             :readonly="!state.allowEdit"
           />
@@ -447,7 +432,6 @@
               (val) => !!state.editedUser.city || 'This field is required',
             ]"
             hide-bottom-space
-            ref="cityRefEdit"
             maxlength="15"
             :readonly="!state.allowEdit"
           />
@@ -461,7 +445,6 @@
               (val) => !!state.editedUser.state || 'This field is required',
             ]"
             hide-bottom-space
-            ref="stateRefEdit"
             maxlength="15"
             :readonly="!state.allowEdit"
           />
@@ -481,7 +464,6 @@
                 !!state.editedUser.githubUsername || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubUsernameRefEdit"
           >
             <template v-slot:append>
               <q-btn
@@ -506,7 +488,6 @@
               (val) => !!state.editedUser.githubUrl || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubUrlRefEdit"
             readonly
           />
         </div>
@@ -521,7 +502,6 @@
               (val) => !!state.editedUser.githubId || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubIdRefEdit"
             readonly
           />
           <q-input
@@ -534,7 +514,6 @@
               (val) => !!state.editedUser.nodeId || 'This field is required',
             ]"
             hide-bottom-space
-            ref="nodeIdRefEdit"
             readonly
           />
           <q-input
@@ -548,7 +527,6 @@
                 !!state.editedUser.githubType || 'This field is required',
             ]"
             hide-bottom-space
-            ref="githubTypeRefEdit"
             readonly
           />
         </div>
@@ -651,34 +629,10 @@ export default defineComponent({
       allowEdit: true,
     });
     const $q = useQuasar();
-
     const nameRefCreate = ref();
-    const ageRefCreate = ref();
-    const zipCodeRefCreate = ref();
-    const addressRefCreate = ref();
-    const districtRefCreate = ref();
-    const cityRefCreate = ref();
-    const stateRefCreate = ref();
     const addressNumberRefCreate = ref();
-    const githubUsernameRefCreate = ref();
-    const githubUrlRefCreate = ref();
-    const githubIdRefCreate = ref();
-    const nodeIdRefCreate = ref();
-    const githubTypeRefCreate = ref();
-
     const nameRefEdit = ref();
-    const ageRefEdit = ref();
-    const zipCodeRefEdit = ref();
-    const addressRefEdit = ref();
-    const districtRefEdit = ref();
-    const cityRefEdit = ref();
-    const stateRefEdit = ref();
     const addressNumberRefEdit = ref();
-    const githubUsernameRefEdit = ref();
-    const githubUrlRefEdit = ref();
-    const githubIdRefEdit = ref();
-    const nodeIdRefEdit = ref();
-    const githubTypeRefEdit = ref();
 
     onMounted(async () => {
       state.users = await getUsers();
@@ -930,45 +884,20 @@ export default defineComponent({
 
     return {
       state,
-
       addressNumberRefCreate,
       nameRefCreate,
-      ageRefCreate,
-      zipCodeRefCreate,
-      addressRefCreate,
-      districtRefCreate,
-      cityRefCreate,
-      stateRefCreate,
-      githubUsernameRefCreate,
-      githubUrlRefCreate,
-      githubIdRefCreate,
-      nodeIdRefCreate,
-      githubTypeRefCreate,
-
       addressNumberRefEdit,
       nameRefEdit,
-      ageRefEdit,
-      zipCodeRefEdit,
-      addressRefEdit,
-      districtRefEdit,
-      cityRefEdit,
-      stateRefEdit,
-      githubUsernameRefEdit,
-      githubUrlRefEdit,
-      githubIdRefEdit,
-      nodeIdRefEdit,
-      githubTypeRefEdit,
-
       addUser,
       deleteAll,
-      handleCloseDialog,
       confirmCreateUser,
       confirmEditUser,
+      handleCloseDialog,
       handleDelete,
       handleEditUser,
+      handleGithubUserSearch,
       handleViewUser,
       handleZipCodeSearch,
-      handleGithubUserSearch,
     };
   },
 });
