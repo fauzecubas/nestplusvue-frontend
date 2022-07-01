@@ -24,6 +24,7 @@
       rowsPerPage: 10,
     }"
     table-header-class="text-italic"
+    card-class="bg-grey-1"
   >
     <template v-slot:body="props">
       <q-tr :props="props">
