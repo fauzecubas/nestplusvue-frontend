@@ -260,7 +260,7 @@
             outlined
             v-model="state.newUser.githubId"
             label="Github ID"
-            class="q-py-xs q-pr-xs col-4"
+            class="q-py-xs q-pr-xs col-6"
             :rules="[
               (val) => !!state.newUser.githubId || 'This field is required',
             ]"
@@ -270,21 +270,9 @@
           <q-input
             dense
             outlined
-            v-model="state.newUser.nodeId"
-            label="Node ID"
-            class="q-pa-xs col-4"
-            :rules="[
-              (val) => !!state.newUser.nodeId || 'This field is required',
-            ]"
-            hide-bottom-space
-            readonly
-          />
-          <q-input
-            dense
-            outlined
             v-model="state.newUser.githubType"
             label="Type"
-            class="q-pl-xs q-py-xs col-4"
+            class="q-pl-xs q-py-xs col-6"
             :rules="[
               (val) => !!state.newUser.githubType || 'This field is required',
             ]"
@@ -497,7 +485,7 @@
             outlined
             v-model="state.editedUser.githubId"
             label="Github ID"
-            class="q-py-xs q-pr-xs col-4"
+            class="q-py-xs q-pr-xs col-6"
             :rules="[
               (val) => !!state.editedUser.githubId || 'This field is required',
             ]"
@@ -507,21 +495,9 @@
           <q-input
             dense
             outlined
-            v-model="state.editedUser.nodeId"
-            label="Node ID"
-            class="q-pa-xs col-4"
-            :rules="[
-              (val) => !!state.editedUser.nodeId || 'This field is required',
-            ]"
-            hide-bottom-space
-            readonly
-          />
-          <q-input
-            dense
-            outlined
             v-model="state.editedUser.githubType"
             label="Type"
-            class="q-pl-xs q-py-xs col-4"
+            class="q-pl-xs q-py-xs col-6"
             :rules="[
               (val) =>
                 !!state.editedUser.githubType || 'This field is required',
@@ -837,15 +813,20 @@ export default defineComponent({
           $q.loading.show({
             message: 'Searching...',
           });
+
           githubUser = await getGithubProfile(username);
+
+          if (Object.values(githubUser).length === 0) {
+            $q.notify({
+              message: 'Github Username not found!',
+              icon: 'error',
+              position: 'top',
+              color: 'negative',
+              timeout: 2500,
+            });
+          }
         } catch (e) {
-          $q.notify({
-            message: 'Address not found!',
-            icon: 'error',
-            position: 'top',
-            color: 'negative',
-            timeout: 2500,
-          });
+          console.log(e);
         } finally {
           if (Object.values(githubUser).length > 0) {
             assignGithubUserFields(githubUser, func);
@@ -854,7 +835,7 @@ export default defineComponent({
         }
       } else if (state.allowEdit) {
         $q.notify({
-          message: 'You must type a zip code!',
+          message: 'You must type a Github Username!',
           icon: 'warning',
           position: 'top',
           color: 'warning',
