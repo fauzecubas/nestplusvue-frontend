@@ -567,7 +567,7 @@ import { getGithubProfile } from 'src/services/GithubService';
 import { useQuasar } from 'quasar';
 import HeaderButton from './HeaderButton.vue';
 import { Address } from 'src/types/Address';
-import { validateNewUser } from 'src/util/validator';
+import { validateUser } from 'src/util/validator';
 import { GithubUser } from 'src/types/GithubUser';
 
 export default defineComponent({
@@ -647,7 +647,7 @@ export default defineComponent({
     }
 
     async function confirmCreateUser(): Promise<void> {
-      if (validateNewUser(state.newUser)) {
+      if (validateUser(state.newUser)) {
         try {
           await createUser(state.newUser);
         } catch (error) {
@@ -678,7 +678,7 @@ export default defineComponent({
     }
 
     async function confirmEditUser(): Promise<void> {
-      if (validateNewUser(state.editedUser)) {
+      if (validateUser(state.editedUser)) {
         try {
           await updateUser(state.editedUser, state.editedUser.id);
         } catch (error) {

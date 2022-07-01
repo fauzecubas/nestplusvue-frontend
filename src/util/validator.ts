@@ -1,6 +1,6 @@
 import { User } from 'src/types/User';
 
-export function validateNewUser(user: User): boolean {
+export function validateUser(user: User): boolean {
   if (
     !user.name ||
     !user.age ||
@@ -9,7 +9,13 @@ export function validateNewUser(user: User): boolean {
     !user.city ||
     !user.address ||
     !user.addressNumber ||
-    !user.state
+    !user.state ||
+    !user.githubUsername ||
+    !user.githubUrl ||
+    !user.githubId ||
+    !user.nodeId ||
+    !user.githubType ||
+    !user.reposUrl
   ) {
     return false;
   }
