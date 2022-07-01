@@ -176,7 +176,7 @@ export default defineComponent({
       state.users = await getUsers();
     });
 
-    async function findRepositories(users: User[]) {
+    async function findRepositories(users: User[]): Promise<void> {
       for (let index = 0; index < users.length; index++) {
         const user = users[index];
 

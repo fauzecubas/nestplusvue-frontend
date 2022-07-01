@@ -124,6 +124,7 @@
             dense
             outlined
             v-model="state.newUser.age"
+            type="number"
             label="Age"
             class="q-pl-xs q-py-xs col-3"
             :rules="[(val) => !!state.newUser.age || 'This field is required']"
@@ -137,6 +138,7 @@
             outlined
             v-model="state.newUser.zipCode"
             label="Zip Code"
+            type="number"
             class="q-py-xs q-pr-xs col-4"
             @keyup.enter="handleZipCodeSearch(state.newUser.zipCode, 'create')"
             :rules="[
@@ -171,6 +173,7 @@
             outlined
             v-model="state.newUser.addressNumber"
             label="Address Number"
+            type="number"
             class="q-py-xs q-pr-xs col-3"
             :rules="[
               (val) =>
@@ -296,7 +299,7 @@
   </q-dialog>
   <!-- ------------------------CREATE USER DIALOG------------------------ -->
 
-  <!-- ------------------------EDIT USER DIALOG------------------------ -->
+  <!-- ------------------------EDIT & VIEW USER DIALOG------------------------ -->
   <q-dialog v-model="state.dialogEditUser" persistent>
     <q-card style="width: 700px; max-width: 80vw">
       <q-card-section>
@@ -334,6 +337,7 @@
             dense
             outlined
             v-model="state.editedUser.age"
+            type="number"
             label="Age"
             class="q-pl-xs q-py-xs col-3"
             :rules="[
@@ -350,6 +354,7 @@
             outlined
             v-model="state.editedUser.zipCode"
             label="Zip Code"
+            type="number"
             class="q-py-xs q-pr-xs col-4"
             @keyup.enter="handleZipCodeSearch(state.editedUser.zipCode, 'edit')"
             :rules="[
@@ -387,6 +392,7 @@
             outlined
             v-model="state.editedUser.addressNumber"
             label="Address Number"
+            type="number"
             class="q-py-xs q-pr-xs col-3"
             :rules="[
               (val) =>
@@ -525,7 +531,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
-  <!-- ------------------------EDIT USER DIALOG------------------------ -->
+  <!-- ------------------------EDIT & VIEW USER DIALOG------------------------ -->
 </template>
 
 <script lang="ts">
@@ -759,7 +765,8 @@ export default defineComponent({
           $q.loading.show({
             message: 'Searching...',
           });
-          address = await getAddressByZipCode(+zipCode);
+
+          address = await getAddressByZipCode(zipCode);
         } catch (e) {
           $q.notify({
             message: 'Address not found!',
@@ -883,3 +890,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
